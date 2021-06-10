@@ -27,9 +27,16 @@ class App extends Component {
       number,
     };
 
-    this.setState((prevState) => ({
-      contacts: [contact, ...prevState.contacts],
-    }));
+    // console.log(this.state.contacts.includes(this.state.name));
+    // console.log(this.state.name);
+    this.setState((prevState) => {
+      if (prevState.contacts.includes(this.state.name)) {
+        return alert(`${this.state.name} is already in contacts`);
+      }
+      this.setState((prevState) => ({
+        contacts: [contact, ...prevState.contacts],
+      }));
+    });
   };
 
   handleChangeNumber = (evt) => {
