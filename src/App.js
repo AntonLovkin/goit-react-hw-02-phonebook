@@ -2,30 +2,37 @@ import { Component } from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import { v4 as uuidv4 } from "uuid";
+import Filter from "./components/Filter";
 
 class App extends Component {
   state = {
-    contacts: [],
+    contacts: [
+      { id: "id-1", name: "Rosie Simpson", number: "459-12-56" },
+      { id: "id-2", name: "Hermione Kline", number: "443-89-12" },
+      { id: "id-3", name: "Eden Clements", number: "645-17-79" },
+      { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
+    ],
     name: "",
     number: "",
+    filter: "",
   };
 
   addContact = (name, number) => {
-    console.log(name);
-    console.log(number);
+    // console.log(name);
+    // console.log(number);
 
     const contact = {
       id: uuidv4(),
       name,
       number,
     };
+
     this.setState((prevState) => ({
       contacts: [contact, ...prevState.contacts],
     }));
   };
-  handleChangeNumber = (evt) => {
-    console.log(evt.target.value);
 
+  handleChangeNumber = (evt) => {
     this.setState({
       // name: evt.currentTarget.value,
       number: evt.target.numbervalue,
@@ -33,28 +40,27 @@ class App extends Component {
   };
 
   handleChange = ({ target }) => {
-    // console.log(evt.currentTarget.numbervalue);
-    // console.log(evt.target.value);
     const { name, value } = target;
-
     this.setState({
       [name]: value,
-      // number: evt.currentTarget.numbervalue
     });
   };
 
   handleSubmit = (evt) => {
     evt.preventDefault();
-    // console.log(this.state);
     const { name, number } = this.state;
 
-    console.log(`
-    name: ${name}
-    number:${number}`);
+    // console.log(`
+    // name: ${name}
+    // number:${number}`);
 
     this.addContact(name, number);
     this.setState({ name: "", number: "" });
     this.reset();
+  };
+
+  changeFilter = (evt) => {
+    this.setState({ filter: evt.currentTarget.value });
   };
 
   reset = () => {
@@ -62,7 +68,14 @@ class App extends Component {
   };
 
   render() {
-    const { name, number } = this.state;
+    const { name, number, filter } = this.state;
+
+    const normalizedFilter = this.state.filter.toLocaleLowerCase();
+
+    const filteredContacts = this.state.contacts.filter((contact) =>
+      contact.name.toLowerCase().includes(normalizedFilter)
+    );
+
     return (
       <form onSubmit={this.handleSubmit}>
         <h2>Phonebook</h2>
@@ -93,16 +106,20 @@ class App extends Component {
             required
           />
         </label>
+
         <button type="submit">Add contact</button>
 
-        <ul> </ul>
-        <h3>Contacts</h3>
-        {console.log(this.state.contacts)}
-        {this.state.contacts.map((contact) => (
-          <li key={contact.id}>
-            {contact.name} : {contact.number}
-          </li>
-        ))}
+        <ul>
+          <h3>Contacts</h3>
+
+          <Filter value={filter} onChange={this.changeFilter} />
+
+          {filteredContacts.map(({ name, number, id }) => (
+            <li key={id}>
+              {name} : {number}
+            </li>
+          ))}
+        </ul>
       </form>
     );
   }
