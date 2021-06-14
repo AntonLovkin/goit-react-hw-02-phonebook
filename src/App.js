@@ -1,9 +1,8 @@
 import { Component } from "react";
-import logo from "./logo.svg";
-import "./App.css";
 import { v4 as uuidv4 } from "uuid";
 import Filter from "./components/Filter";
-
+import ContactsList from "./components/Contacts/Contacts-list";
+import ContactForm from "./components/Contact-form/Contact-form";
 class App extends Component {
   state = {
     contacts: [
@@ -12,59 +11,45 @@ class App extends Component {
       { id: "id-3", name: "Eden Clements", number: "645-17-79" },
       { id: "id-4", name: "Annie Copeland", number: "227-91-26" },
     ],
-    name: "",
-    number: "",
+    // name: "",
+    // number: "",
     filter: "",
   };
 
   addContact = (name, number) => {
-    // console.log(name);
-    // console.log(number);
-
     const contact = {
       id: uuidv4(),
       name,
       number,
     };
 
-    // console.log(this.state.contacts.includes(this.state.name));
-    // console.log(this.state.name);
-    this.setState((prevState) => {
-      if (prevState.contacts.includes(this.state.name)) {
-        return alert(`${this.state.name} is already in contacts`);
-      }
-      this.setState((prevState) => ({
-        contacts: [contact, ...prevState.contacts],
-      }));
-    });
+    this.setState((prevState) => ({
+      contacts: [contact, ...prevState.contacts],
+    }));
   };
 
-  handleChangeNumber = (evt) => {
-    this.setState({
-      // name: evt.currentTarget.value,
-      number: evt.target.numbervalue,
-    });
-  };
+  // handleChangeNumber = (evt) => {
+  //   this.setState({
+  //     // name: evt.currentTarget.value,
+  //     number: evt.target.numbervalue,
+  //   });
+  // };
 
-  handleChange = ({ target }) => {
-    const { name, value } = target;
-    this.setState({
-      [name]: value,
-    });
-  };
+  // handleChange = ({ target }) => {
+  //   const { name, value } = target;
+  //   this.setState({
+  //     [name]: value,
+  //   });
+  // };
 
-  handleSubmit = (evt) => {
-    evt.preventDefault();
-    const { name, number } = this.state;
+  // handleSubmit = (evt) => {
+  //   evt.preventDefault();
+  //   const { name, number } = this.state;
 
-    // console.log(`
-    // name: ${name}
-    // number:${number}`);
-
-    this.addContact(name, number);
-    this.setState({ name: "", number: "" });
-    this.reset();
-  };
+  //   this.addContact(name, number);
+  //   this.setState({ name: "", number: "" });
+  //   this.reset();
+  // };
 
   changeFilter = (evt) => {
     this.setState({ filter: evt.currentTarget.value });
@@ -74,8 +59,16 @@ class App extends Component {
     this.setState({ name: "", number: "" });
   };
 
+  DeleteContact = (contactId) => {
+    this.setState((prevState) => ({
+      contacts: prevState.contacts.filter(
+        (contact) => contact.id !== contactId
+      ),
+    }));
+  };
+
   render() {
-    const { name, number, filter } = this.state;
+    const { filter } = this.state;
 
     const normalizedFilter = this.state.filter.toLocaleLowerCase();
 
@@ -84,50 +77,18 @@ class App extends Component {
     );
 
     return (
-      <form onSubmit={this.handleSubmit}>
-        <h2>Phonebook</h2>
-        <label>
-          Name
-          <input
-            value={name}
-            onChange={this.handleChange}
-            placeholder="Name"
-            type="text"
-            name="name"
-            pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
-            title=" "
-            required
-          />
-        </label>
+      <div>
+        <h1>Phonebook</h1>
+        <ContactForm onSubmit={this.addContact} />
 
-        <label>
-          Number
-          <input
-            value={number}
-            onChange={this.handleChange}
-            type="tel"
-            name="number"
-            placeholder="Number"
-            pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
-            title="Номер телефона должен состоять цифр и может содержать пробелы, тире, круглые скобки и может начинаться с +"
-            required
-          />
-        </label>
+        <h2>Contacts</h2>
+        <Filter value={filter} onChange={this.changeFilter} />
 
-        <button type="submit">Add contact</button>
-
-        <ul>
-          <h3>Contacts</h3>
-
-          <Filter value={filter} onChange={this.changeFilter} />
-
-          {filteredContacts.map(({ name, number, id }) => (
-            <li key={id}>
-              {name} : {number}
-            </li>
-          ))}
-        </ul>
-      </form>
+        <ContactsList
+          filteredContacts={filteredContacts}
+          onDeleteContact={this.DeleteContact}
+        />
+      </div>
     );
   }
 }
